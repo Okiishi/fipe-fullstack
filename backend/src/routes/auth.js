@@ -12,48 +12,56 @@ const JWT_SECRET = process.env.JWT_SECRET || "seu_super_segredo";
 // Rota de Login: POST /api/auth/login
 router.post(
   "/login",
-  // Validação dos campos de entrada
-  body("username", "Nome de usuário é obrigatório").notEmpty(),
-  body("password", "Senha é obrigatória").notEmpty(),
+  [
+    body("email", "Por favor, inclua um email válido").isEmail(),
+    body("password", "A senha é obrigatória").exists(),
+  ],
   async (req, res) => {
-    // Retorna erros de validação, se houver
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { username, password } = req.body;
+    // CORREÇÃO: A desestruturação vem PRIMEIRO
+    const { email, password } = req.body;
 
     try {
-      const user = await User.findByUsername(username);
+      // DEPOIS usamos a variável 'email' para a busca
+      const user = await User.findOne({ where: { email } });
+
+      // Verificamos se o usuário existe E se a senha está correta
+      // Enviamos a mesma mensagem de erro nos dois casos por segurança
       if (!user) {
-        logger.warn(
-          `Tentativa de login falhou: Usuário não encontrado - ${username}`
-        );
-        return res.status(404).json({ message: "Usuário não encontrado." });
+        return res.status(401).json({ message: "Credenciais inválidas" });
       }
 
-      const isPasswordMatch = await User.comparePassword(
-        password,
-        user.password_hash
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Credenciais inválidas" });
+      }
+
+      // Se tudo estiver certo, criamos o payload e o token
+      const payload = {
+        user: {
+          id: user.id,
+        },
+      };
+
+      jwt.sign(
+        payload,
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }, // Token expira em 1 hora
+        (err, token) => {
+          if (err) throw err;
+          res.json({ token });
+        }
       );
-      if (!isPasswordMatch) {
-        logger.warn(
-          `Tentativa de login falhou: Senha inválida para o usuário - ${username}`
-        );
-        return res.status(401).json({ message: "Senha inválida." });
-      }
-
-      // ...
-      logger.info(`Usuário ${username} logado com sucesso.`);
-      res.status(200).json({ auth: true, token: token });
     } catch (error) {
-      logger.error(
-        `Erro no servidor durante o login para o usuário ${username}: ${error.message}`
-      );
-      res.status(500).json({ message: "Erro interno no servidor." });
+      console.error("Erro no servidor durante o login:", error.message);
+      res.status(500).send("Erro interno do servidor");
     }
   }
 );
 
+// Não esqueça do module.exports no final do arquivo
 module.exports = router;

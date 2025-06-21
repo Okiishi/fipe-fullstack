@@ -2,18 +2,20 @@
 
 const express = require("express");
 const router = express.Router();
-const axios = require("axios"); // Usaremos axios para facilitar as requisições HTTP
+const axios = require("axios");
 const NodeCache = require("node-cache");
 const { body, validationResult } = require("express-validator");
+const logger = require("../config/logger"); // Adicionei a importação do logger que estava faltando
 
 const Vehicle = require("../models/Vehicle");
+
+// 1. IMPORTE O MIDDLEWARE APENAS UMA VEZ
 const authMiddleware = require("../middleware/auth");
 
-// Configuração do cache: os dados da FIPE não mudam com frequência.
-// Um TTL (time-to-live) de 1 dia (86400 segundos) é uma boa escolha.
 const fipeCache = new NodeCache({ stdTTL: 86400 });
 
-// Middleware para todas as rotas neste arquivo
+// 2. APLIQUE A PROTEÇÃO AQUI PARA TODAS AS ROTAS DO ARQUIVO
+// Qualquer rota definida abaixo desta linha exigirá autenticação.
 router.use(authMiddleware);
 
 // Função auxiliar para fazer requisições à API FIPE com cache
@@ -30,7 +32,7 @@ const fetchFipeData = async (url, cacheKey) => {
   return response.data;
 };
 
-// --- Rotas de Busca (Proxy com Cache) ---
+// --- Rotas de Busca (já protegidas pelo router.use acima) ---
 
 router.get("/marcas/:vehicleType", async (req, res) => {
   const { vehicleType } = req.params;
@@ -83,13 +85,13 @@ router.get(
   }
 );
 
-// --- Rota de Inserção ---
+// --- Rota de Inserção (já protegida pelo router.use acima) ---
 
+// 3. REMOVA O MIDDLEWARE DUPLICADO DAQUI
 router.post(
   "/vehicles",
-  auth, // 1. Protege a rota, exigindo um token de autenticação válido.
   [
-    // 2. Define as regras de validação para os dados recebidos.
+    // As regras de validação continuam aqui
     body("brand", "A marca é obrigatória e deve ser um texto.")
       .isString()
       .notEmpty()
@@ -111,7 +113,6 @@ router.post(
       .escape(),
   ],
   async (req, res) => {
-    // 3. Verifica se houve erros de validação.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       logger.warn("Falha na validação ao inserir veículo:", {
@@ -121,10 +122,9 @@ router.post(
     }
 
     try {
-      // 4. Extrai os dados validados do corpo da requisição.
       const { brand, model, year, value } = req.body;
 
-      // 5. Usa o modelo Vehicle para criar um novo registro no banco de dados.
+      // Nota: Verifique se seu modelo Vehicle tem o método .create (Sequelize) ou .insert (SQL puro)
       const newVehicle = await Vehicle.create({
         brand,
         model,
@@ -136,7 +136,6 @@ router.post(
         vehicleId: newVehicle.id,
         userId: req.user.id,
       });
-      // 6. Retorna uma resposta de sucesso com os dados do veículo criado.
       res.status(201).json(newVehicle);
     } catch (error) {
       logger.error("Erro ao inserir veículo no banco de dados:", {

@@ -1,0 +1,11 @@
+{"level":"error","message":"Erro no servidor durante o login para o usuário lucas: autentica��o do tipo senha falhou para o usu�rio \"your_user\"","timestamp":"2025-06-21T22:18:47.529Z"}
+{"level":"error","message":"Erro no servidor durante o login para o usuário postgres: autentica��o do tipo senha falhou para o usu�rio \"your_user\"","timestamp":"2025-06-21T22:20:12.865Z"}
+{"level":"error","message":"Erro no servidor durante o login para o usuário postgres: autentica��o do tipo senha falhou para o usu�rio \"your_user\"","timestamp":"2025-06-21T22:20:14.726Z"}
+{"level":"error","message":"Erro no servidor durante o login para o usuário admin@admin.com: autentica��o do tipo senha falhou para o usu�rio \"your_user\"","timestamp":"2025-06-21T22:23:49.698Z"}
+{"level":"error","message":"Erro no servidor durante o login para o usuário admin@admin.com: autentica��o do tipo senha falhou para o usu�rio \"your_user\"","timestamp":"2025-06-21T22:29:54.375Z"}
+{"level":"error","message":"Erro no servidor durante o login para o usuário admin@admin.com: User.findByUsername is not a function","timestamp":"2025-06-21T23:18:59.674Z"}
+{"level":"error","message":"Erro no servidor durante o login para o usuário admin@admin.com: User.findByUsername is not a function","timestamp":"2025-06-21T23:19:10.256Z"}
+{"level":"error","message":"Erro no servidor durante o login para o usuário admin@admin.com: User.findByUsername is not a function","timestamp":"2025-06-21T23:20:39.442Z"}
+{"level":"error","message":"Erro no servidor durante o login para o usuário admin@admin.com: User.findByUsername is not a function","timestamp":"2025-06-21T23:20:41.163Z"}
+{"level":"error","message":"Erro no servidor durante o login para o usuário admin@admin.com: email is not defined","timestamp":"2025-06-21T23:23:08.198Z"}
+{"level":"error","message":"Erro no servidor durante o login para o usuário admin@admin.com: email is not defined","timestamp":"2025-06-21T23:25:15.722Z"}

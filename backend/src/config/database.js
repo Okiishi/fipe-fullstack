@@ -1,14 +1,16 @@
-const { Pool } = require("pg");
+const { Sequelize } = require("sequelize");
+require("dotenv").config();
 
-const pool = new Pool({
-  user: "your_user",
-  host: "localhost",
-  database: "fipe_app",
-  password: "your_password",
-  port: 5432,
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+const sequelize = new Sequelize(
+  process.env.DB_DATABASE,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    dialect: "postgres", // Informa ao Sequelize que estamos usando PostgreSQL
+    port: process.env.DB_PORT,
+    logging: false, // Opcional: desativa os logs de query do Sequelize no console
+  }
+);
 
-module.exports = pool;
+module.exports = sequelize;

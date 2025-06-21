@@ -1,91 +1,83 @@
-// frontend/src/App.jsx
-import { Routes, Route } from "react-router-dom";
+import React from "react";
+// REMOVEMOS O 'BrowserRouter as Router' daqui e mantivemos o resto
+import { Routes, Route, Link as RouterLink } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
 import { VehicleProvider } from "./contexts/VehicleContext";
+
+import Login from "./components/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
 import SelectBrand from "./components/SelectBrand";
 import SelectModel from "./components/SelectModel";
 import SelectYear from "./components/SelectYear";
 import VehicleResult from "./components/VehicleResult";
-import { Container, Typography } from "@mui/material";
-import Login from "./components/Login";
-import ProtectedRoute from "./components/ProtectedRoute";
 import VehicleForm from "./components/VehicleForm";
 
-// Componente para a página de consulta FIPE
-const FipePage = () => (
-  <VehicleProvider>
-    <Container
-      maxWidth="sm"
-      sx={{ mt: 4, p: 4, bgcolor: "#f9f9f9", borderRadius: 2, boxShadow: 3 }}
-    >
-      <Typography variant="h4" gutterBottom align="center">
-        Consulta Tabela FIPE
-      </Typography>
+import {
+  Container,
+  Typography,
+  AppBar,
+  Toolbar,
+  Button,
+  Box,
+} from "@mui/material";
+
+// Página principal de busca de veículos
+const SearchPage = () => (
+  <Box sx={{ my: 4 }}>
+    <Typography variant="h4" component="h1" gutterBottom>
+      Consulta Tabela FIPE
+    </Typography>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <SelectBrand />
       <SelectModel />
       <SelectYear />
-      <VehicleResult />
-    </Container>
-  </VehicleProvider>
+    </Box>
+    <VehicleResult />
+  </Box>
 );
 
 function App() {
   return (
+    // O AuthProvider continua aqui
     <AuthProvider>
       <VehicleProvider>
-        <Router>
-          <AppBar position="static">
-            <Toolbar>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                Consulta Tabela FIPE
-              </Typography>
-              {/* 2. Adicione um link para a nova rota */}
-              <Button color="inherit" component={RouterLink} to="/">
-                Busca
-              </Button>
-              <Button color="inherit" component={RouterLink} to="/insert">
-                Inserir
-              </Button>
-            </Toolbar>
-          </AppBar>
-          <Container>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <Box sx={{ my: 4 }}>
-                      <Typography variant="h4" component="h1" gutterBottom>
-                        Busca de Veículos
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 2,
-                        }}
-                      >
-                        <SelectBrand />
-                        <SelectModel />
-                        <SelectYear />
-                      </Box>
-                      <VehicleResult />
-                    </Box>
-                  </ProtectedRoute>
-                }
-              />
-              {/* 3. Crie a nova rota protegida para o formulário */}
-              <Route
-                path="/insert"
-                element={
-                  <ProtectedRoute>
-                    <VehicleForm />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </Container>
-        </Router>
+        {/* O <Router> foi REMOVIDO daqui de dentro */}
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              FIPE
+            </Typography>
+            <Button color="inherit" component={RouterLink} to="/">
+              Busca
+            </Button>
+            <Button color="inherit" component={RouterLink} to="/insert">
+              Inserir
+            </Button>
+          </Toolbar>
+        </AppBar>
+
+        <Container>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <SearchPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/insert"
+              element={
+                <ProtectedRoute>
+                  <VehicleForm />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Container>
+        {/* Fim do que estava dentro do <Router> */}
       </VehicleProvider>
     </AuthProvider>
   );

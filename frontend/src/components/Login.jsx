@@ -13,7 +13,8 @@ import {
 import api from "../api";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  // --- MUDANÇA 1: Alterado de 'username' para 'email' ---
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { login } = useContext(AuthContext);
@@ -23,14 +24,18 @@ const Login = () => {
     e.preventDefault();
     setError("");
     try {
-      const response = await api.post("/auth/login", { username, password });
+      // --- MUDANÇA 2: Enviando 'email' em vez de 'username' ---
+      const response = await api.post("/auth/login", { email, password });
       if (response.data.token) {
         login(response.data.token);
-        navigate("/"); // Redireciona para a página principal após o login
+        navigate("/");
       }
     } catch (err) {
+      // A mensagem de erro agora virá do back-end, ex: "Credenciais inválidas"
       const errorMessage =
-        err.response?.data?.message || "Erro ao tentar fazer login.";
+        err.response?.data?.errors?.[0]?.msg ||
+        err.response?.data?.message ||
+        "Erro ao tentar fazer login.";
       setError(errorMessage);
     }
   };
@@ -49,17 +54,18 @@ const Login = () => {
           Login
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          {/* --- MUDANÇA 3: Atualizando o campo de texto para usar 'email' --- */}
           <TextField
             margin="normal"
             required
             fullWidth
-            id="username"
-            label="Usuário"
-            name="username"
-            autoComplete="username"
+            id="email"
+            label="Email"
+            name="email"
+            autoComplete="email"
             autoFocus
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             margin="normal"
