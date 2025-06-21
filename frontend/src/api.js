@@ -19,4 +19,12 @@ api.interceptors.request.use(
   }
 );
 
+export const insertVehicle = (vehicleData, token) => {
+  return api.post("/fipe/vehicles", vehicleData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 export default api;

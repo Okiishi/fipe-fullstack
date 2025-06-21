@@ -8,6 +8,7 @@ import VehicleResult from "./components/VehicleResult";
 import { Container, Typography } from "@mui/material";
 import Login from "./components/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
+import VehicleForm from "./components/VehicleForm";
 
 // Componente para a página de consulta FIPE
 const FipePage = () => (
@@ -29,12 +30,64 @@ const FipePage = () => (
 
 function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<FipePage />} />
-      </Route>
-    </Routes>
+    <AuthProvider>
+      <VehicleProvider>
+        <Router>
+          <AppBar position="static">
+            <Toolbar>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                Consulta Tabela FIPE
+              </Typography>
+              {/* 2. Adicione um link para a nova rota */}
+              <Button color="inherit" component={RouterLink} to="/">
+                Busca
+              </Button>
+              <Button color="inherit" component={RouterLink} to="/insert">
+                Inserir
+              </Button>
+            </Toolbar>
+          </AppBar>
+          <Container>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Box sx={{ my: 4 }}>
+                      <Typography variant="h4" component="h1" gutterBottom>
+                        Busca de Veículos
+                      </Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 2,
+                        }}
+                      >
+                        <SelectBrand />
+                        <SelectModel />
+                        <SelectYear />
+                      </Box>
+                      <VehicleResult />
+                    </Box>
+                  </ProtectedRoute>
+                }
+              />
+              {/* 3. Crie a nova rota protegida para o formulário */}
+              <Route
+                path="/insert"
+                element={
+                  <ProtectedRoute>
+                    <VehicleForm />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Container>
+        </Router>
+      </VehicleProvider>
+    </AuthProvider>
   );
 }
 

@@ -86,38 +86,65 @@ router.get(
 // --- Rota de Inserção ---
 
 router.post(
-  "/veiculos",
-  // Validação e sanitização dos campos
-  body("Modelo")
-    .notEmpty()
-    .trim()
-    .escape()
-    .withMessage("O campo Modelo é obrigatório."),
-  body("Marca")
-    .notEmpty()
-    .trim()
-    .escape()
-    .withMessage("O campo Marca é obrigatório."),
-  body("AnoModelo").isInt({ min: 1900 }).withMessage("Ano do modelo inválido."),
-  body("Valor")
-    .notEmpty()
-    .trim()
-    .escape()
-    .withMessage("O campo Valor é obrigatório."),
-  body("Combustivel").trim().escape(),
+  "/vehicles",
+  auth, // 1. Protege a rota, exigindo um token de autenticação válido.
+  [
+    // 2. Define as regras de validação para os dados recebidos.
+    body("brand", "A marca é obrigatória e deve ser um texto.")
+      .isString()
+      .notEmpty()
+      .trim()
+      .escape(),
+    body("model", "O modelo é obrigatório e deve ser um texto.")
+      .isString()
+      .notEmpty()
+      .trim()
+      .escape(),
+    body("year", "O ano é obrigatório e deve ser um número.").isInt({
+      min: 1950,
+      max: new Date().getFullYear() + 1,
+    }),
+    body("value", "O valor é obrigatório.")
+      .isString()
+      .notEmpty()
+      .trim()
+      .escape(),
+  ],
   async (req, res) => {
+    // 3. Verifica se houve erros de validação.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.warn("Falha na validação ao inserir veículo:", {
+        errors: errors.array(),
+      });
       return res.status(400).json({ errors: errors.array() });
     }
 
     try {
-      const newVehicle = await Vehicle.insert(req.body);
+      // 4. Extrai os dados validados do corpo da requisição.
+      const { brand, model, year, value } = req.body;
+
+      // 5. Usa o modelo Vehicle para criar um novo registro no banco de dados.
+      const newVehicle = await Vehicle.create({
+        brand,
+        model,
+        year,
+        value,
+      });
+
+      logger.info("Veículo inserido com sucesso:", {
+        vehicleId: newVehicle.id,
+        userId: req.user.id,
+      });
+      // 6. Retorna uma resposta de sucesso com os dados do veículo criado.
       res.status(201).json(newVehicle);
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Erro no servidor ao inserir o veículo." });
+      logger.error("Erro ao inserir veículo no banco de dados:", {
+        error: error.message,
+        stack: error.stack,
+        userId: req.user.id,
+      });
+      res.status(500).send("Erro no servidor ao tentar inserir o veículo.");
     }
   }
 );
