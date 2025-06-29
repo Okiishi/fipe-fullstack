@@ -1,4 +1,3 @@
-// backend/src/middleware/auth.js (CORRIGIDO)
 const jwt = require("jsonwebtoken");
 const logger = require("../config/logger");
 
@@ -11,24 +10,18 @@ function authMiddleware(req, res, next) {
     logger.warn(
       `Acesso negado à rota ${req.originalUrl}: Token ausente ou mal formatado.`
     );
-    return res
-      .status(401)
-      .json({
-        message: "Acesso negado. Token não fornecido ou mal formatado.",
-      });
+    return res.status(401).json({
+      message: "Acesso negado. Token não fornecido ou mal formatado.",
+    });
   }
 
   const token = authHeader.split(" ")[1];
 
   try {
-    // Verifica o token e decodifica o payload
     const decoded = jwt.verify(token, JWT_SECRET);
 
-    // Adiciona o payload do usuário (que é { id: ... }) ao objeto req
-    // Agora `req.user` será `{ id: ... }`
     req.user = decoded.user;
 
-    // Continua para a próxima rota/middleware
     next();
   } catch (err) {
     logger.warn(

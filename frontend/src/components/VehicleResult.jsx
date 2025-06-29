@@ -24,7 +24,7 @@ const VehicleResult = () => {
     }
 
     dispatch({ type: "SET_LOADING", payload: true });
-    dispatch({ type: "SET_RESULT", payload: null }); // Limpa o resultado anterior
+    dispatch({ type: "SET_RESULT", payload: null });
 
     try {
       const res = await api.get(
@@ -71,8 +71,6 @@ const VehicleResult = () => {
           </Typography>
           <Typography>Marca : {state.result.Marca}</Typography>
           <Typography>Ano : {state.result.AnoModelo}</Typography>
-          {/* A linha abaixo foi removida */}
-          {/* <Typography>Combustível: {state.result.Combustivel}</Typography> */}
           <Typography fontWeight="bold" sx={{ mt: 1 }}>
             Valor: {state.result.Valor}
           </Typography>

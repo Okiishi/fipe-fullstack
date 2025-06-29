@@ -1,37 +1,24 @@
-// backend/src/routes/fipe.js
-
 const express = require("express");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
-const { Op } = require("sequelize"); // Importando Op do Sequelize para consultas
+const { Op } = require("sequelize");
 const logger = require("../config/logger");
 
-// Importando os modelos
-const Vehicle = require("../models/Vehicle"); // << CORREÇÃO APLICADA AQUI
+const Vehicle = require("../models/Vehicle");
 
-// Importando o middleware de autenticação
-const authMiddleware = require("../middleware/auth");
+const authMiddleware = require("../config/auth");
 
-// Aplicando o middleware de autenticação a todas as rotas deste arquivo
 router.use(authMiddleware);
 
-// --- ROTAS DE BUSCA (MODIFICADAS PARA USAR O BANCO DE DADOS) ---
-
-/**
- * @route   GET /api/fipe/marcas/:vehicleType
- * @desc    Busca as marcas distintas do banco de dados do usuário logado
- * @access  Privado
- */
 router.get("/marcas/:vehicleType", async (req, res) => {
   try {
     const vehicles = await Vehicle.findAll({
-      where: { userId: req.user.id }, // Filtra por usuário logado
+      where: { userId: req.user.id },
       attributes: ["brand"],
       group: ["brand"],
       order: [["brand", "ASC"]],
     });
 
-    // Formata os dados para corresponder ao que o frontend espera
     const formattedBrands = vehicles.map((v) => ({
       codigo: v.brand,
       nome: v.brand,
@@ -50,25 +37,19 @@ router.get("/marcas/:vehicleType", async (req, res) => {
   }
 });
 
-/**
- * @route   GET /api/fipe/modelos/:vehicleType/:brandCode
- * @desc    Busca os modelos de uma marca do banco de dados do usuário logado
- * @access  Privado
- */
 router.get("/modelos/:vehicleType/:brandCode", async (req, res) => {
   const { brandCode } = req.params;
   try {
     const vehicles = await Vehicle.findAll({
       where: {
         brand: brandCode,
-        userId: req.user.id, // Filtra por usuário logado
+        userId: req.user.id,
       },
       attributes: ["model"],
       group: ["model"],
       order: [["model", "ASC"]],
     });
 
-    // Formata os dados para corresponder ao que o frontend espera
     const formattedModels = {
       modelos: vehicles.map((v) => ({
         codigo: v.model,
@@ -90,11 +71,6 @@ router.get("/modelos/:vehicleType/:brandCode", async (req, res) => {
   }
 });
 
-/**
- * @route   GET /api/fipe/anos/:vehicleType/:brandCode/:modelCode
- * @desc    Busca os anos de um modelo do banco de dados do usuário logado
- * @access  Privado
- */
 router.get("/anos/:vehicleType/:brandCode/:modelCode", async (req, res) => {
   const { brandCode, modelCode } = req.params;
   try {
@@ -102,16 +78,15 @@ router.get("/anos/:vehicleType/:brandCode/:modelCode", async (req, res) => {
       where: {
         brand: brandCode,
         model: modelCode,
-        userId: req.user.id, // Filtra por usuário logado
+        userId: req.user.id,
       },
       attributes: ["year"],
       group: ["year"],
       order: [["year", "DESC"]],
     });
 
-    // Formata os dados para corresponder ao que o frontend espera
     const formattedYears = vehicles.map((v) => ({
-      codigo: `${v.year}-1`, // Mantém o formato "ANO-1" para compatibilidade
+      codigo: `${v.year}-1`,
       nome: v.year.toString(),
     }));
 
@@ -130,16 +105,11 @@ router.get("/anos/:vehicleType/:brandCode/:modelCode", async (req, res) => {
   }
 });
 
-/**
- * @route   GET /api/fipe/valor/:vehicleType/:brandCode/:modelCode/:yearCode
- * @desc    Busca o valor de um veículo específico do banco de dados do usuário logado
- * @access  Privado
- */
 router.get(
   "/valor/:vehicleType/:brandCode/:modelCode/:yearCode",
   async (req, res) => {
     const { brandCode, modelCode, yearCode } = req.params;
-    // Extrai o ano do yearCode (ex: "2015-1" -> "2015")
+
     const year = yearCode.split("-")[0];
 
     try {
@@ -148,7 +118,7 @@ router.get(
           brand: brandCode,
           model: modelCode,
           year: year,
-          userId: req.user.id, // Filtra por usuário logado
+          userId: req.user.id,
         },
       });
 
@@ -162,9 +132,8 @@ router.get(
           .json({ message: "Veículo não encontrado na sua base de dados." });
       }
 
-      // Monta a resposta no mesmo formato da API FIPE para não quebrar o frontend
       const result = {
-        Valor: vehicle.value, // Nome da coluna no seu BD é 'value'
+        Valor: vehicle.value,
         Marca: vehicle.brand,
         Modelo: vehicle.model,
         AnoModelo: vehicle.year,
@@ -184,12 +153,9 @@ router.get(
   }
 );
 
-// --- ROTA DE INSERÇÃO (SEM ALTERAÇÕES) ---
-
 router.post(
   "/vehicles",
   [
-    // As regras de validação continuam aqui
     body("brand", "A marca é obrigatória e deve ser um texto.")
       .isString()
       .notEmpty()
@@ -227,7 +193,7 @@ router.post(
         model,
         year,
         value,
-        userId: req.user.id, // Adiciona o ID do usuário ao criar o veículo
+        userId: req.user.id,
       });
 
       logger.info("Veículo inserido com sucesso:", {

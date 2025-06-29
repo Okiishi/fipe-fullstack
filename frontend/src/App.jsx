@@ -1,4 +1,3 @@
-// frontend/src/App.jsx
 import React, { useContext } from "react";
 import {
   BrowserRouter as Router,
@@ -7,7 +6,7 @@ import {
   Link as RouterLink,
 } from "react-router-dom";
 
-import { AuthContext, AuthProvider } from "./contexts/AuthContext"; // Importe o AuthContext E o AuthProvider
+import { AuthContext, AuthProvider } from "./contexts/AuthContext";
 import { VehicleProvider } from "./contexts/VehicleContext";
 
 import Login from "./components/Login";
@@ -27,9 +26,6 @@ import {
   Box,
 } from "@mui/material";
 
-// Componente para a Barra de Navegação
-// Como ele está FORA do componente App principal, ele será renderizado como 'filho' do AuthProvider,
-// o que permite o uso seguro do useContext.
 const NavigationBar = () => {
   const { isAuthenticated, logout } = useContext(AuthContext);
 
@@ -55,7 +51,6 @@ const NavigationBar = () => {
   );
 };
 
-// Página principal de busca de veículos
 const SearchPage = () => (
   <Box sx={{ my: 4 }}>
     <Typography variant="h4" component="h1" gutterBottom>
@@ -72,13 +67,12 @@ const SearchPage = () => (
 
 function App() {
   return (
-    // 1. O Router envolve tudo
     <Router basename="/FipeApi">
-      {/* 2. O AuthProvider envolve os componentes que precisam de autenticação */}
+      {}
       <AuthProvider>
-        {/* 3. O VehicleProvider envolve os componentes que precisam do estado do veículo */}
+        {}
         <VehicleProvider>
-          {/* Usamos o componente NavigationBar aqui */}
+          {}
           <NavigationBar />
 
           <Container>

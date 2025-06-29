@@ -8,7 +8,6 @@ const SelectModel = () => {
 
   useEffect(() => {
     if (state.selectedBrand) {
-      // Altera a chamada para usar o backend
       api
         .get(`/fipe/modelos/${state.vehicleType}/${state.selectedBrand}`)
         .then((res) =>

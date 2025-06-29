@@ -1,10 +1,7 @@
-// frontend/src/contexts/AuthContext.jsx
-
 import React, { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 
-// AQUI ESTÁ A LINHA CRÍTICA! Deve ser 'export const'
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {

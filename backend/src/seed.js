@@ -1,16 +1,11 @@
-// backend/src/seed.js
-
 const sequelize = require("./config/database");
 const User = require("./models/User");
 const Vehicle = require("./models/Vehicle");
 
-// Define a associação entre os modelos, crucial para o script funcionar
 User.hasMany(Vehicle, { foreignKey: "userId", as: "vehicles" });
 Vehicle.belongsTo(User, { foreignKey: "userId", as: "user" });
 
-// Lista de veículos para popular o banco de dados.
 const vehiclesData = [
-  // Fiat
   { brand: "Fiat", model: "Mobi", year: 2023, value: "R$ 69.990,00" },
   { brand: "Fiat", model: "Argo", year: 2023, value: "R$ 79.790,00" },
   { brand: "Fiat", model: "Cronos", year: 2024, value: "R$ 92.990,00" },
@@ -21,7 +16,7 @@ const vehiclesData = [
   { brand: "Fiat", model: "Uno", year: 2021, value: "R$ 55.000,00" },
   { brand: "Fiat", model: "Palio", year: 2017, value: "R$ 42.000,00" },
   { brand: "Fiat", model: "Siena", year: 2018, value: "R$ 48.000,00" },
-  // Volkswagen
+
   { brand: "Volkswagen", model: "Polo", year: 2023, value: "R$ 86.390,00" },
   { brand: "Volkswagen", model: "Nivus", year: 2024, value: "R$ 130.890,00" },
   { brand: "Volkswagen", model: "T-Cross", year: 2024, value: "R$ 136.990,00" },
@@ -32,7 +27,7 @@ const vehiclesData = [
   { brand: "Volkswagen", model: "Virtus", year: 2024, value: "R$ 106.990,00" },
   { brand: "Volkswagen", model: "Jetta", year: 2023, value: "R$ 226.990,00" },
   { brand: "Volkswagen", model: "Saveiro", year: 2024, value: "R$ 95.770,00" },
-  // Chevrolet
+
   { brand: "Chevrolet", model: "Onix", year: 2024, value: "R$ 84.390,00" },
   { brand: "Chevrolet", model: "Onix Plus", year: 2024, value: "R$ 96.390,00" },
   { brand: "Chevrolet", model: "Tracker", year: 2024, value: "R$ 130.920,00" },
@@ -43,7 +38,7 @@ const vehiclesData = [
   { brand: "Chevrolet", model: "Equinox", year: 2023, value: "R$ 215.770,00" },
   { brand: "Chevrolet", model: "Celta", year: 2016, value: "R$ 34.000,00" },
   { brand: "Chevrolet", model: "Prisma", year: 2019, value: "R$ 68.000,00" },
-  // Hyundai
+
   { brand: "Hyundai", model: "HB20", year: 2024, value: "R$ 82.290,00" },
   { brand: "Hyundai", model: "Creta", year: 2024, value: "R$ 135.390,00" },
   { brand: "Hyundai", model: "HB20S", year: 2024, value: "R$ 91.890,00" },
@@ -54,7 +49,7 @@ const vehiclesData = [
   { brand: "Hyundai", model: "Elantra", year: 2018, value: "R$ 95.000,00" },
   { brand: "Hyundai", model: "i30", year: 2016, value: "R$ 78.000,00" },
   { brand: "Hyundai", model: "Veloster", year: 2013, value: "R$ 65.000,00" },
-  // Toyota
+
   { brand: "Toyota", model: "Corolla", year: 2024, value: "R$ 148.990,00" },
   {
     brand: "Toyota",
@@ -70,7 +65,7 @@ const vehiclesData = [
   { brand: "Toyota", model: "Yaris Sedan", year: 2024, value: "R$ 99.990,00" },
   { brand: "Toyota", model: "Prius", year: 2021, value: "R$ 170.000,00" },
   { brand: "Toyota", model: "Camry", year: 2020, value: "R$ 280.000,00" },
-  // Honda
+
   { brand: "Honda", model: "Civic", year: 2024, value: "R$ 265.900,00" },
   { brand: "Honda", model: "HR-V", year: 2024, value: "R$ 151.200,00" },
   { brand: "Honda", model: "City", year: 2024, value: "R$ 118.700,00" },
@@ -86,7 +81,7 @@ const vehiclesData = [
   { brand: "Honda", model: "Accord", year: 2021, value: "R$ 260.000,00" },
   { brand: "Honda", model: "Civic Si", year: 2020, value: "R$ 180.000,00" },
   { brand: "Honda", model: "Fit Personal", year: 2020, value: "R$ 82.000,00" },
-  // Renault
+
   { brand: "Renault", model: "Kwid", year: 2024, value: "R$ 72.640,00" },
   { brand: "Renault", model: "Duster", year: 2024, value: "R$ 118.690,00" },
   { brand: "Renault", model: "Sandero", year: 2022, value: "R$ 80.000,00" },
@@ -102,7 +97,7 @@ const vehiclesData = [
   },
   { brand: "Renault", model: "Clio", year: 2016, value: "R$ 38.000,00" },
   { brand: "Renault", model: "Fluence", year: 2018, value: "R$ 70.000,00" },
-  // Jeep
+
   { brand: "Jeep", model: "Renegade", year: 2024, value: "R$ 134.190,00" },
   { brand: "Jeep", model: "Compass", year: 2024, value: "R$ 180.390,00" },
   { brand: "Jeep", model: "Commander", year: 2024, value: "R$ 234.590,00" },
@@ -128,7 +123,7 @@ const vehiclesData = [
     year: 2022,
     value: "R$ 170.000,00",
   },
-  // Ford
+
   { brand: "Ford", model: "Ranger", year: 2024, value: "R$ 239.990,00" },
   { brand: "Ford", model: "Territory", year: 2024, value: "R$ 209.990,00" },
   { brand: "Ford", model: "Bronco Sport", year: 2023, value: "R$ 272.790,00" },
@@ -139,7 +134,7 @@ const vehiclesData = [
   { brand: "Ford", model: "EcoSport", year: 2021, value: "R$ 90.000,00" },
   { brand: "Ford", model: "Fiesta", year: 2019, value: "R$ 55.000,00" },
   { brand: "Ford", model: "Focus", year: 2019, value: "R$ 75.000,00" },
-  // Nissan
+
   { brand: "Nissan", model: "Kicks", year: 2024, value: "R$ 112.990,00" },
   { brand: "Nissan", model: "Versa", year: 2024, value: "R$ 107.490,00" },
   { brand: "Nissan", model: "Frontier", year: 2024, value: "R$ 242.490,00" },
@@ -163,7 +158,7 @@ const seedDatabase = async () => {
       console.log("Usuário admin não encontrado, criando um novo...");
       adminUser = await User.create({
         email: "admin@admin.com",
-        password: "password", // O hook no modelo vai criptografar
+        password: "password",
       });
       console.log("Usuário admin de teste criado com sucesso!");
     } else {

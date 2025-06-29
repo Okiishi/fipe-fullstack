@@ -1,5 +1,3 @@
-// backend/src/routes/auth.js
-
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
@@ -9,7 +7,6 @@ const logger = require("../config/logger");
 
 const JWT_SECRET = process.env.JWT_SECRET || "seu_super_segredo";
 
-// Rota de Login: POST /api/auth/login
 router.post(
   "/login",
   [
@@ -22,15 +19,11 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    // CORREÇÃO: A desestruturação vem PRIMEIRO
     const { email, password } = req.body;
 
     try {
-      // DEPOIS usamos a variável 'email' para a busca
       const user = await User.findOne({ where: { email } });
 
-      // Verificamos se o usuário existe E se a senha está correta
-      // Enviamos a mesma mensagem de erro nos dois casos por segurança
       if (!user) {
         return res.status(401).json({ message: "Credenciais inválidas" });
       }
@@ -40,7 +33,6 @@ router.post(
         return res.status(401).json({ message: "Credenciais inválidas" });
       }
 
-      // Se tudo estiver certo, criamos o payload e o token
       const payload = {
         user: {
           id: user.id,
@@ -50,7 +42,7 @@ router.post(
       jwt.sign(
         payload,
         process.env.JWT_SECRET,
-        { expiresIn: "1h" }, // Token expira em 1 hora
+        { expiresIn: "1h" },
         (err, token) => {
           if (err) throw err;
           res.json({ token });
@@ -63,5 +55,4 @@ router.post(
   }
 );
 
-// Não esqueça do module.exports no final do arquivo
 module.exports = router;

@@ -8,7 +8,6 @@ const SelectYear = () => {
 
   useEffect(() => {
     if (state.selectedBrand && state.selectedModel) {
-      // Altera a chamada para usar o backend
       api
         .get(
           `/fipe/anos/${state.vehicleType}/${state.selectedBrand}/${state.selectedModel}`

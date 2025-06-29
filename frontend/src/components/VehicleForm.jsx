@@ -27,7 +27,6 @@ const VehicleForm = () => {
     setError("");
     setSuccess("");
 
-    // Validação simples no front-end
     if (
       !formData.brand ||
       !formData.model ||
@@ -43,7 +42,7 @@ const VehicleForm = () => {
       setSuccess(
         `Veículo "${response.data.brand} ${response.data.model}" inserido com sucesso!`
       );
-      // Limpa o formulário após o sucesso
+
       setFormData({
         brand: "",
         model: "",

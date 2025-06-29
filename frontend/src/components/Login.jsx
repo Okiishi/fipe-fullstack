@@ -1,4 +1,3 @@
-// frontend/src/components/Login.jsx
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import {
@@ -15,7 +14,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  // A lógica correta: pega a função 'login' do contexto
+
   const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
@@ -24,7 +23,6 @@ const Login = () => {
     try {
       const response = await api.post("/auth/login", { email, password });
       if (response.data.token) {
-        // A função 'login' agora cuida de salvar o token, atualizar o estado e navegar
         login(response.data.token);
       }
     } catch (err) {
@@ -36,7 +34,6 @@ const Login = () => {
     }
   };
 
-  // O conteúdo visual que estava faltando é restaurado aqui
   return (
     <Container component="main" maxWidth="xs">
       <Box

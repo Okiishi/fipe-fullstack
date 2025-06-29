@@ -18,12 +18,12 @@ const Vehicle = sequelize.define("Vehicle", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  // Adicionando a chave estrangeira para o usuário
+
   userId: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: "Users", // Nome da tabela de usuários
+      model: "Users",
       key: "id",
     },
   },
