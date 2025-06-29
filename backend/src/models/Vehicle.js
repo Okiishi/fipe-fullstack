@@ -1,34 +1,32 @@
-// backend/src/models/Vehicle.js
-
-const { DataTypes, Model } = require("sequelize");
+const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
-class Vehicle extends Model {}
-
-Vehicle.init(
-  {
-    brand: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    model: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    year: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    value: {
-      type: DataTypes.STRING,
-      allowNull: false,
+const Vehicle = sequelize.define("Vehicle", {
+  brand: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  model: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  year: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  value: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  // Adicionando a chave estrangeira para o usuário
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: "Users", // Nome da tabela de usuários
+      key: "id",
     },
   },
-  {
-    sequelize, // Passa a conexão do sequelize que foi importada
-    modelName: "Vehicle",
-    tableName: "vehicles", // Garante que o nome da tabela no banco seja 'vehicles'
-  }
-);
+});
 
 module.exports = Vehicle;

@@ -1,7 +1,13 @@
-import React from "react";
-// REMOVEMOS O 'BrowserRouter as Router' daqui e mantivemos o resto
-import { Routes, Route, Link as RouterLink } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
+// frontend/src/App.jsx
+import React, { useContext } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link as RouterLink,
+} from "react-router-dom";
+
+import { AuthContext, AuthProvider } from "./contexts/AuthContext"; // Importe o AuthContext E o AuthProvider
 import { VehicleProvider } from "./contexts/VehicleContext";
 
 import Login from "./components/Login";
@@ -21,6 +27,34 @@ import {
   Box,
 } from "@mui/material";
 
+// Componente para a Barra de Navegação
+// Como ele está FORA do componente App principal, ele será renderizado como 'filho' do AuthProvider,
+// o que permite o uso seguro do useContext.
+const NavigationBar = () => {
+  const { isAuthenticated, logout } = useContext(AuthContext);
+
+  return (
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          FIPE
+        </Typography>
+        <Button color="inherit" component={RouterLink} to="/">
+          Busca
+        </Button>
+        <Button color="inherit" component={RouterLink} to="/insert">
+          Inserir
+        </Button>
+        {isAuthenticated && (
+          <Button color="inherit" onClick={logout}>
+            Sair
+          </Button>
+        )}
+      </Toolbar>
+    </AppBar>
+  );
+};
+
 // Página principal de busca de veículos
 const SearchPage = () => (
   <Box sx={{ my: 4 }}>
@@ -38,48 +72,39 @@ const SearchPage = () => (
 
 function App() {
   return (
-    // O AuthProvider continua aqui
-    <AuthProvider>
-      <VehicleProvider>
-        {/* O <Router> foi REMOVIDO daqui de dentro */}
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              FIPE
-            </Typography>
-            <Button color="inherit" component={RouterLink} to="/">
-              Busca
-            </Button>
-            <Button color="inherit" component={RouterLink} to="/insert">
-              Inserir
-            </Button>
-          </Toolbar>
-        </AppBar>
+    // 1. O Router envolve tudo
+    <Router basename="/FipeApi">
+      {/* 2. O AuthProvider envolve os componentes que precisam de autenticação */}
+      <AuthProvider>
+        {/* 3. O VehicleProvider envolve os componentes que precisam do estado do veículo */}
+        <VehicleProvider>
+          {/* Usamos o componente NavigationBar aqui */}
+          <NavigationBar />
 
-        <Container>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <SearchPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/insert"
-              element={
-                <ProtectedRoute>
-                  <VehicleForm />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </Container>
-        {/* Fim do que estava dentro do <Router> */}
-      </VehicleProvider>
-    </AuthProvider>
+          <Container>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <SearchPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/insert"
+                element={
+                  <ProtectedRoute>
+                    <VehicleForm />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Container>
+        </VehicleProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

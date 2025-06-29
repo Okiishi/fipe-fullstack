@@ -24,17 +24,16 @@ const VehicleResult = () => {
     }
 
     dispatch({ type: "SET_LOADING", payload: true });
+    dispatch({ type: "SET_RESULT", payload: null }); // Limpa o resultado anterior
 
     try {
-      // Altera a chamada para usar o backend
       const res = await api.get(
         `/fipe/valor/${state.vehicleType}/${state.selectedBrand}/${state.selectedModel}/${state.selectedYear}`
       );
       dispatch({ type: "SET_RESULT", payload: res.data });
     } catch (err) {
-      // Exibe o erro vindo do backend
       const errorMessage =
-        err.response?.data?.message || "Erro ao consultar a API.";
+        err.response?.data?.message || "Erro ao consultar o veículo.";
       dispatch({ type: "SET_ERROR", payload: errorMessage });
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
@@ -66,14 +65,17 @@ const VehicleResult = () => {
       )}
 
       {state.result && !state.loading && (
-        <Box mt={3} p={3} bgcolor="#ffffff" borderRadius={2} boxShadow={2}>
-          <Typography variant="h6" gutterBottom>
+        <Box mt={3} p={3} bgcolor="#ffffff" borderRadius={2} boxShadow={3}>
+          <Typography variant="h6" component="div" gutterBottom>
             {state.result.Modelo}
           </Typography>
-          <Typography>Marca: {state.result.Marca}</Typography>
-          <Typography>Ano Modelo: {state.result.AnoModelo}</Typography>
-          <Typography>Combustível: {state.result.Combustivel}</Typography>
-          <Typography fontWeight="bold">Valor: {state.result.Valor}</Typography>
+          <Typography>Marca : {state.result.Marca}</Typography>
+          <Typography>Ano : {state.result.AnoModelo}</Typography>
+          {/* A linha abaixo foi removida */}
+          {/* <Typography>Combustível: {state.result.Combustivel}</Typography> */}
+          <Typography fontWeight="bold" sx={{ mt: 1 }}>
+            Valor: {state.result.Valor}
+          </Typography>
         </Box>
       )}
     </>

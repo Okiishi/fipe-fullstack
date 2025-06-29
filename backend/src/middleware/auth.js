@@ -1,47 +1,41 @@
-// backend/src/middleware/auth.js
-const logger = require("../config/logger");
+// backend/src/middleware/auth.js (CORRIGIDO)
 const jwt = require("jsonwebtoken");
+const logger = require("../config/logger");
 
-// É crucial armazenar seu segredo em uma variável de ambiente em um projeto real.
 const JWT_SECRET = process.env.JWT_SECRET || "seu_super_segredo";
 
 function authMiddleware(req, res, next) {
-  // O token é geralmente enviado no cabeçalho 'Authorization' como 'Bearer TOKEN'
   const authHeader = req.headers.authorization;
 
-  if (!authHeader) {
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
     logger.warn(
-      `Acesso negado à rota ${req.originalUrl}: Nenhum token fornecido.`
+      `Acesso negado à rota ${req.originalUrl}: Token ausente ou mal formatado.`
     );
     return res
       .status(401)
-      .json({ message: "Acesso negado. Nenhum token fornecido." });
+      .json({
+        message: "Acesso negado. Token não fornecido ou mal formatado.",
+      });
   }
 
-  const parts = authHeader.split(" ");
+  const token = authHeader.split(" ")[1];
 
-  if (parts.length !== 2) {
-    return res.status(401).json({ message: "Erro no token." });
+  try {
+    // Verifica o token e decodifica o payload
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    // Adiciona o payload do usuário (que é { id: ... }) ao objeto req
+    // Agora `req.user` será `{ id: ... }`
+    req.user = decoded.user;
+
+    // Continua para a próxima rota/middleware
+    next();
+  } catch (err) {
+    logger.warn(
+      `Tentativa de acesso com token inválido à rota ${req.originalUrl}. Erro: ${err.message}`
+    );
+    return res.status(401).json({ message: "Token inválido ou expirado." });
   }
-
-  const [scheme, token] = parts;
-
-  if (!/^Bearer$/i.test(scheme)) {
-    return res.status(401).json({ message: "Token mal formatado." });
-  }
-
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) {
-      logger.warn(
-        `Tentativa de acesso com token inválido à rota ${req.originalUrl}. Erro: ${err.message}`
-      );
-      return res.status(401).json({ message: "Token inválido." });
-    }
-
-    // Adiciona o ID do usuário decodificado ao objeto de requisição
-    req.userId = decoded.id;
-    return next();
-  });
 }
 
 module.exports = authMiddleware;

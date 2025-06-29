@@ -1,6 +1,5 @@
 // frontend/src/components/Login.jsx
 import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import {
   Button,
@@ -13,25 +12,22 @@ import {
 import api from "../api";
 
 const Login = () => {
-  // --- MUDANÇA 1: Alterado de 'username' para 'email' ---
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  // A lógica correta: pega a função 'login' do contexto
   const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
-      // --- MUDANÇA 2: Enviando 'email' em vez de 'username' ---
       const response = await api.post("/auth/login", { email, password });
       if (response.data.token) {
+        // A função 'login' agora cuida de salvar o token, atualizar o estado e navegar
         login(response.data.token);
-        navigate("/");
       }
     } catch (err) {
-      // A mensagem de erro agora virá do back-end, ex: "Credenciais inválidas"
       const errorMessage =
         err.response?.data?.errors?.[0]?.msg ||
         err.response?.data?.message ||
@@ -40,6 +36,7 @@ const Login = () => {
     }
   };
 
+  // O conteúdo visual que estava faltando é restaurado aqui
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -54,7 +51,6 @@ const Login = () => {
           Login
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          {/* --- MUDANÇA 3: Atualizando o campo de texto para usar 'email' --- */}
           <TextField
             margin="normal"
             required
